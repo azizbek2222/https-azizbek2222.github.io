@@ -1,21 +1,20 @@
-// 1. Token va URL ni eng tepaga qo'yamiz
-const API_TOKEN = "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"; 
-const API_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct";
+// 1. Yangi tokenni shu yerga qo'ying
+const API_TOKEN = "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"; 
+const MODEL_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct";
 
-// 2. Keyin funksiyani yozamiz
 async function sendMessage() {
     const inputField = document.getElementById("user-input");
     const chatBox = document.getElementById("chat-box");
-    const userText = inputField.value;
+    const userText = inputField.value.trim();
 
     if (!userText) return;
 
-    // Foydalanuvchi xabarini ko'rsatish
     chatBox.innerHTML += `<div class="user-msg"><b>Siz:</b> ${userText}</div>`;
     inputField.value = "";
 
     try {
-        const response = await fetch(API_URL, {
+        // GitHub'da CORS xatosini yengish uchun vaqtincha Proxy ishlatamiz
+        const response = await fetch(MODEL_URL, {
             method: "POST",
             headers: { 
                 "Authorization": `Bearer ${API_TOKEN}`,
@@ -23,27 +22,24 @@ async function sendMessage() {
             },
             body: JSON.stringify({
                 inputs: userText,
-                parameters: { 
-                    max_new_tokens: 500,
-                    return_full_text: false 
-                }
+                parameters: { max_new_tokens: 500, return_full_text: false }
             })
         });
 
         const data = await response.json();
 
-        if (data.error && data.error.includes("loading")) {
-            chatBox.innerHTML += `<p style="color:orange"><i>AI uyg'onmoqda... (${Math.round(data.estimated_time)} soniya kuting)</i></p>`;
+        if (data.error) {
+            if (data.error.includes("loading")) {
+                chatBox.innerHTML += `<div class="ai-msg"><i>AI yuklanmoqda (30 soniya kuting)...</i></div>`;
+            } else {
+                chatBox.innerHTML += `<div class="ai-msg" style="color:red">Xato: ${data.error}</div>`;
+            }
         } else if (data[0] && data[0].generated_text) {
-            let aiText = data[0].generated_text;
-            chatBox.innerHTML += `<div class="ai-msg"><b>AI:</b> ${aiText}</div>`;
-        } else {
-            chatBox.innerHTML += `<p style="color:red">Xatolik: ${data.error || "Noma'lum xato"}</p>`;
+            chatBox.innerHTML += `<div class="ai-msg"><b>AI:</b> ${data[0].generated_text}</div>`;
         }
 
-        chatBox.scrollTop = chatBox.scrollHeight;
     } catch (error) {
-        console.error("Xatolik:", error);
-        chatBox.innerHTML += `<p style="color:red">Tarmoq xatosi yuz berdi!</p>`;
+        chatBox.innerHTML += `<div class="ai-msg" style="color:red">Tarmoq xatosi! Brauzerda CORS cheklangan bo'lishi mumkin.</div>`;
     }
+    chatBox.scrollTop = chatBox.scrollHeight;
 }

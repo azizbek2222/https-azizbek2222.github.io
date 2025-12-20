@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
     <meta charset="UTF-8">
-    <title>Mening Gemini AI botim</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Bot GitHub</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="chat-container">
         <div id="chat-box"></div>
         <div class="input-area">
-            <input type="text" id="user-input" placeholder="Savol yozing...">
+            <input type="text" id="user-input" placeholder="Savol yozing..." onkeypress="if(event.key === 'Enter') sendMessage()">
             <button onclick="sendMessage()">Yuborish</button>
         </div>
     </div>
