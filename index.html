@@ -1,19 +1,65 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Bot GitHub</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Telegram Kanal Tekshirish</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: Arial; background: #0f172a; color: #fff; text-align: center; padding: 20px; }
+  button { padding: 12px 20px; margin: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+  #subscribe { background: #22c55e; color: #000; }
+  #check { background: #3b82f6; color: #fff; }
+  #result { margin-top: 20px; padding: 10px; background: #1e293b; border-radius: 8px; min-height: 40px; }
+</style>
 </head>
 <body>
-    <div class="chat-container">
-        <div id="chat-box"></div>
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Savol yozing..." onkeypress="if(event.key === 'Enter') sendMessage()">
-            <button onclick="sendMessage()">Yuborish</button>
-        </div>
-    </div>
-    <script src="script.js"></script>
+
+<h2>Telegram Kanalga Obuna Tekshirish</h2>
+
+<!-- Kanalga obuna bo‘lish -->
+<button id="subscribe" onclick="subscribe()">Obuna bo‘lish</button>
+
+<!-- Tekshirish tugmasi -->
+<button id="check" onclick="checkSubscription()">Tekshirish</button>
+
+<!-- Natija -->
+<div id="result"></div>
+
+<script>
+// Sizning Telegram bot token va kanal username
+const BOT_TOKEN = "8224144427:AAEKcZywZtHP_61fLKLAWks0Pu9Q80aIDrg";
+const CHANNEL_USERNAME = "@rocket_mining_news";
+
+function subscribe() {
+  // Foydalanuvchini kanalingizga yo‘naltirish
+  window.open("https://t.me/" + CHANNEL_USERNAME.replace("@",""), "_blank");
+}
+
+async function checkSubscription() {
+  const userId = prompt("Telegram IDingizni kiriting:"); // Mini appda foydalanuvchi ID olish
+  if (!userId) return;
+
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=${CHANNEL_USERNAME}&user_id=${userId}`;
+  
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.ok) {
+      const status = data.result.status;
+      if (status === "member" || status === "administrator" || status === "creator") {
+        document.getElementById("result").innerText = "✅ Siz kanalga obuna bo‘lgansiz!";
+      } else {
+        document.getElementById("result").innerText = "❌ Siz kanalga obuna emassiz!";
+      }
+    } else {
+      document.getElementById("result").innerText = "Xatolik: " + data.description;
+    }
+  } catch (e) {
+    document.getElementById("result").innerText = "Xatolik: " + e;
+  }
+}
+</script>
+
 </body>
 </html>
